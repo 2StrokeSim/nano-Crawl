@@ -25,13 +25,13 @@ class collection extends PIXI.Sprite
 		this.cards = [];
         this.meta = template.meta;
 
-        if (template.path.generator != undefined)
+        if (template.geometry.generator != undefined)
         {
-            this.path = template.path.generator(template.path);
+            this.geometry = template.geometry.generator(template.geometry);
         }
         else
         {
-            this.path = pathLink.incrementalFromCoords(template.path);
+            this.geometry = Geometry.incrementalFromCoords(template.geometry);
         }
     }
 
@@ -51,7 +51,7 @@ class collection extends PIXI.Sprite
         target.push(this.shift());
     }
 
-    //TODO: Poolry named. Meh.
+    //TODO: Poorly named. Meh.
     get_overvisual()
     {
         if (this.visual)
@@ -69,10 +69,7 @@ class collection extends PIXI.Sprite
 		this.cards.push(card);
 		this.addChild(card);
 
-        card.x = this.path.index.x;
-        card.y = this.path.index.y;
-        
-        this.path.increment();
+        this.geometry.attach(card);
 
         if (card.visual)
         {
@@ -92,12 +89,7 @@ class collection extends PIXI.Sprite
 		this.cards.push(card);
 		this.addChild(card);
 
-        card.x = this.path.start.x;        
-        card.y = this.path.start.y;
-        
-        this.path.increment();
-
-      //  this._calculateBounds();        
+        this.geometry.attach(card);
 	}
 	
 	pop()
@@ -105,7 +97,7 @@ class collection extends PIXI.Sprite
         var card = this.cards.pop();
 		this.removeChild(card);
              
-        this.path.decrement();
+        this.geometry.decrement();
 
         return card;
 	}
@@ -125,7 +117,7 @@ class collection extends PIXI.Sprite
         this.removeChild(card);
         this.cards.splice(this.cards.indexOf(card), 1);
         // TODO: a lot more than this
-        this.path.decrement();
+        this.geometry.decrement();
     }
 	
     empty()
@@ -181,13 +173,13 @@ class collection extends PIXI.Sprite
         }
     }    
     
-    component_via_path(path)
+    component_via_geometry(geometry)
     {
         var component = this;
         
-        for (var i = 0; i < path.descent.length; i++)
+        for (var i = 0; i < geometry.descent.length; i++)
         {
-            component = component.cards[path.descent[i]];
+            component = component.cards[geometry.descent[i]];
         }
 
         return component;
@@ -202,14 +194,14 @@ class collection extends PIXI.Sprite
             item = item.parent;
         }
         
-        item = item.component_via_path(path);
+        item = item.component_via_geometry(path);
 
         return item;
     }    
     
     update_component(path)
     {
-        var component = this.component_via_path(path);
+        var component = this.component_via_geometry(path);
         component.status_update();
     }
     
@@ -226,24 +218,24 @@ class Selection extends collection
 {
     constructor(x, y, r, deltaX = 0, deltaY = 0, deltaR = 0, meta = [], clicked = false)
     {
-        super({ path: { X: x, Y: y, R: r, deltaX: deltaX, deltaY: deltaY, deltaR: deltaR } });
+        super({ geometry: { X: x, Y: y, R: r, deltaX: deltaX, deltaY: deltaY, deltaR: deltaR } });
     }
     
     push(card)
 	{
 		this.cards.push(card);
 
-        card.x += this.path.index.x;        
-        card.y += this.path.index.y;
+        card.x += this.geometry.index.x;        
+        card.y += this.geometry.index.y;
 	}
 	
 	pop()
 	{   
         var card = this.cards.pop();
 
-        card.x -= this.path.index.x;
-        card.y -= this.path.index.y;             
-     //   this.path.decrement();
+        card.x -= this.geometry.index.x;
+        card.y -= this.geometry.index.y;             
+     //   this.geometry.decrement();
 
         return card;
 	}
@@ -330,27 +322,55 @@ var camera;
 var selection;
 var registry = {};
 
-var cardGame = function(PIXI,Width=550,Height=400)
+//var camera = { subject: undefined, anchor: undefined, map: undefined, root: undefined }
+
+var cardGame = function(PIXI,Width=800,Height=600)
 {       
     screenWidth = Width;
     screenHeight = Height;
-    
-    registry.player = new Card(0, PIXI, "android_omni", {visual: {visible:true}});
 
-    var entrance = new Card(0, PIXI, "cave_entrance", {visual: {visible:true}});
-    entrance.cards[0].push(registry.player);
-    registry.player.y = (144*1.5+(400-144*1.5)/2);
+    stage_background = new PIXI.Sprite();
 
-    registry.interaction = new Card(0, PIXI, "interaction", {visual: {visible:true}});
-
-    var vestibule = new Card(0,PIXI, "vestibule", {visual: {visible:true}});
-
-    vestibule.cards[1].include(entrance);
-    entrance.cards[1].include(vestibule);
+    stage_background.height = 1;
+    app.stage.addChild(stage_background);
         
-    camera = entrance;
+    registry.open_hands = [];
+
+    var meadow = new Card(0, PIXI, "meadow", {visual: {visible:true}});
+    var cave = new Card(0, PIXI, "cave", {visual: {visible:true}});
+    
+    meadow.y = -30;
+
+    var entrance = meadow.cards[0];
+    var vestibule = cave.cards[0];
+
+    var arpeture = new Card(0, PIXI, "cave_entrance", {visual: {visible:true}}, undefined, undefined, [vestibule]);
+
+    entrance.cards[2].push(arpeture);
+    
+    registry.location = entrance;
+    registry.player = new Card(0, PIXI, "android_omni", {visual: {visible:true}});    
+    
+    entrance.cards[0].push(registry.player);    
+    
+    entrance.camera_open_location(entrance);
+
+    
+  //  arpeture.set_input({ input: [{ event: 'pointerdown', response: "set_context", parameters: ["drop_down_hand"] }] });
+
+  
+
+    
+//    registry.player.parent.parent.x = (300);
+//    registry.player.parent.parent.y = (120);
+//    registry.player.parent.parent.visual.portal.drawRect(-cardW * 100, -cardH * 100, cardW * 100, cardH * 100);
+    registry.interaction = new Card(0, PIXI, "interaction", {visual: {visible:true}});
+        
+    camera = meadow;
     camera.x = cardW/2+20;
     camera.y = cardH;
+
+    camera.visual.muralize();
 
     selection = new Selection(0, -20, 0, 0, 0, 0);
 
@@ -370,10 +390,10 @@ var cardGame = function(PIXI,Width=550,Height=400)
 
     this.enterFrame = function()
     {
-        for (i in camera.children)
+        for (var i in camera.children)
         {
             camera.children[i].enterFrame();
-        //            registry.interaction.action();
+        //  registry.interaction.action();
         }
         
         
@@ -386,20 +406,61 @@ var cardGame = function(PIXI,Width=550,Height=400)
 
 var process_turn  = function()
 {
-    registry.location = camera;
-        registry.biome = registry.location.cards[0];
-    
-            for (var i = 0; i < registry.biome.cards.length; i++)
-            {
-                registry.actor = registry.biome.cards[i];
-                    registry.deck = registry.actor.cards[2];
-                    
-                registry.actor.action();
-            }
-            
-            var junk = registry.interaction.cards[0];
-            registry.interaction.action();
+    registry.area = camera;
+        registry.location = registry.area.cards[0];
+            registry.biome = registry.location.cards[0];
+        
+                for (var i = 0; i < registry.biome.cards.length; i++)
+                {
+                    registry.actor = registry.biome.cards[i];
+                        registry.components = registry.actor.cards[3];
+                        registry.deck = registry.actor.cards[3];              
+                            registry.actor.action();
+                }
+
+                for (var i = 0; i < registry.open_hands.length; i++)
+                {
+                    registry.open_hands[i].update();
+                }
+              
+                var junk = registry.interaction.cards[0];
+                registry.interaction.action();
 }
+
+        var tilingSprites = [];
+
+
+    var stage_background;
+    var muralize = function(texture)
+    {
+        for (var i = 0; i < tilingSprites.length; i++)
+        {
+            stage_background.removeChild(tilingSprites[i]);            
+        }
+        for (var i = 0; i < illustration.library[texture].sheet.idle.length; i++)
+        {
+            tilingSprites[i] = new PIXI.TilingSprite(
+                illustration.library[texture].sheet.idle[i],
+                240,
+                170,
+            );
+            
+            tilingSprites[i].width *= 800;
+            tilingSprites[i].height *= 100;
+            
+            tilingSprites[i].tileScale.x = 800 / illustration.library[texture].sheet.idle[i].width;
+            tilingSprites[i].tileScale.y = (600 / illustration.library[texture].sheet.idle[i].height);
+            
+            tilingSprites[i].anchor.set(0.0);
+            
+            tilingSprites[i].zIndex = i - illustration.library[texture].sheet.idle.length;
+          
+            stage_background.addChild(tilingSprites[i]);
+        }
+        
+    //    this.x = 0; this.y = 0;
+    //    this.background.y = 0;        
+    }
 
 class Sound
 {
