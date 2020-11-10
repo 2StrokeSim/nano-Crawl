@@ -24,6 +24,12 @@ class caption extends PIXI.Text
         this.name = template.title;
     } 
 
+    mural_title()
+    {
+        this.y = -100;
+        this.x += 350;//(app.stage._width / 2);// - (this.width / 2);
+    }
+
     iconize()
     {
         this.text = "";
