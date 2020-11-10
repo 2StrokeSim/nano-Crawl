@@ -1,53 +1,3 @@
-Card.library.auto_hand =
-{
-    title: "AI Hand",
-    
-    meta: "hand",           
-
-    path: { X: 0, Y: 0, R: 0, deltaX: 0, deltaY: 0, deltaR: 0},                          
-    
-    action: 
-    [
-        { response: "deal_cards", parameters: [] }
-    ],            
-    
-    path: { X: 0, Y: 0, R: 0, deltaX: cardW + 10, deltaY: 0, deltaR: 0},
-    
-    attributes: {}
-};           
-
-Card.library.laborer_reserve = 
-{
-    title: "Aggro Laborer Action",
-
-    meta: [
-    "deck"
-    ],
-    
-    X: 0 , Y: 0,
-    
-    collection: { X: 0, Y: 0, deltaX: 0, deltaY: 0 },                            
-                    
-
-    path: { X: 0, Y: 0, R: 0, deltaX: 0, deltaY: 0, deltaR: 0},                       
-
-               
-    inventory:
-    [  
-        { 
-            template: "simple_attack_action_pack", meta: ["deck"], visual: { visible: false },                                 
-        },                       
-        
-        { 
-            template: "simple_player_death_event_pack", meta: ["deck"], visual: { visible: false },                                 
-        },
-        
-        { 
-            template: "simple_AI_engage_event_pack", meta: ["deck"], visual: { visible: false },                                 
-        },        
-    ]
-};
-        
 Card.library.primary_laborer_deck =
 {
     title: "Aggro Laborer Action",
@@ -61,9 +11,9 @@ Card.library.primary_laborer_deck =
     collection: { X: 0, Y: 0, deltaX: 0, deltaY: 0 },                            
                  
 
-    path: 
+    geometry: 
     { 
-        generator: pathLink.listFromCoords, 
+        generator: Geometry.listFromCoords, 
         elements: 
         [   
             { X: 0, Y: 0, R: 0 },
@@ -78,15 +28,15 @@ Card.library.primary_laborer_deck =
     inventory:
     [
         { 
-            type: "card", meta: ["hand"], template: "auto_hand", visual: { visible: true },
+            type: "card", meta: ["hand"], template: "simple_container", visual: { visible: true },
         },
        
         { 
-            template: "simple_AI_engage_event_pack", meta: ["deck"], visual: { visible: false },                                 
+            template: "simple_container", meta: ["deck"], visual: { visible: false },                                 
         },     
 
         { 
-            template: "laborer_reserve", meta: ["reserve"], visual: { visible: false },                                 
+            template: "simple_container", meta: ["reserve"], visual: { visible: false },                                 
         }, 
 
         { 
@@ -99,45 +49,10 @@ Card.library.primary_laborer_deck =
     ]
 };
 
-Card.library.button_play =
-{
-    
-    visual: 
-    {
-        title: "Play Cards",                
-        texture: "button_play",
-    },
-    
-    meta: "hand",            
-    
-    input: [{ event: 'pointerdown', response: "selection_action", parameters: [] }],  
-    
-    path: { X: 0, Y: 0, R: 0, deltaX: cardW + 10, deltaY: 0, deltaR: 0},
-    
-    attributes: {}
-};
-
-Card.library.manual_hand =
-{
-    title: "Player Hand",
-    
-    meta: "hand",            
-    
-    action: 
-    [
-        { response: "deal_cards", parameters: [] },
-        { response: "set_collection_input", parameters: [] }        
-    ],            
-    
-    path: { X: 0, Y: 0, R: 0, deltaX: cardW + 10, deltaY: 0, deltaR: 0},
-    
-    attributes: {}
-};
-
 Card.library.prepared =
 {
     meta: "prepared",
-    path: { X: 0, Y: 0, R: 0, deltaX: cardW + 10, deltaY: 0, deltaR: 0}, 
+    geometry: { X: 0, Y: 0, R: 0, deltaX: cardW + 10, deltaY: 0, deltaR: 0}, 
     action: [],
     inventory: [], 
     meta: "simple container" 
@@ -146,48 +61,12 @@ Card.library.prepared =
 Card.library.executing =
 {  
     meta: "executing",
-    path: { X: 0, Y: 0, R: 0, deltaX: cardW + 2, deltaY: 0, deltaR: 0}, 
+    geometry: { X: 0, Y: 0, R: 0, deltaX: cardW + 2, deltaY: 0, deltaR: 0}, 
     action: [],
     inventory: [], 
     meta: "simple container" 
 };
 
-Card.library.player_reserve = 
-{
-    title: "Aggro Laborer Action",
-
-    meta: [
-    "deck"
-    ],
-    
-    
-    X: 0 , Y: 0,
-    
-    collection: { X: 0, Y: 0, deltaX: 0, deltaY: 0 },                            
-                    
-
-    path: { X: 0, Y: 0, R: 0, deltaX: 0, deltaY: 0, deltaR: 0},                       
-
-               
-    inventory:
-    [  
-        { 
-            template: "simple_attack_action_pack", meta: ["deck"], visual: { visible: false },                                 
-        },                       
-        
-        { 
-            template: "simple_player_death_event_pack", meta: ["deck"], visual: { visible: false },                                 
-        },
-        
-        { 
-            template: "simple_player_engage_event_pack", meta: ["deck"], visual: { visible: false },                                 
-        },      
-
-        { 
-            template: "simple_player_travel_event_pack", meta: ["deck"], visual: { visible: false },                                 
-        }        
-    ]
-};
 
 Card.library.primary_player_deck =
 {
@@ -202,9 +81,9 @@ Card.library.primary_player_deck =
     
     collection: { X: 0, Y: 0, deltaX: 0, deltaY: 0 },                            
                     
-    path: 
+    geometry: 
     { 
-        generator: pathLink.listFromCoords, 
+        generator: Geometry.listFromCoords, 
         elements: 
         [   
             { X: 0, Y: 0, R: 0 },
@@ -215,21 +94,21 @@ Card.library.primary_player_deck =
         ]
     },      
     
- //   path: { X: 0, Y: 0, R: 0, deltaX: 0, deltaY: 0, deltaR: 0},                       
+ //   geometry: { X: 0, Y: 0, R: 0, deltaX: 0, deltaY: 0, deltaR: 0},                       
 
                
     inventory:
     [
         { 
-            type: "card", meta: ["hand"], template: "manual_hand", visual: { visible: true }
+            type: "card", meta: ["hand"], template: "simple_container", visual: { visible: true }
         },
        
         { 
-            template: "simple_player_travel_event_pack", meta: ["deck"], visual: { visible: false },
+            template: "simple_container", meta: ["deck"], visual: { visible: false },
         },
 
         { 
-            template: "player_reserve", meta: ["reserve"], visual: { visible: false },                                 
+            template: "simple_container", meta: ["reserve"], visual: { visible: false },                                 
         },          
         
         { 
