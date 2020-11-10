@@ -2,7 +2,7 @@ class background extends PIXI.Sprite
 {
 }
 
-class illustration extends PIXI.Sprite
+class illustration extends PIXI.Container
 {
     
 	static AndroidOmniSheetImage = PIXI.BaseTexture.fromImage("./img/adventurer-v1.5-Sheet.png");
@@ -24,15 +24,36 @@ class illustration extends PIXI.Sprite
 
     static CaveEntranceSheetImage = PIXI.BaseTexture.fromImage("./img/cave_entrance1.png");
 
+    static SkyParallax = PIXI.BaseTexture.fromImage("./img/sky.png");
+    static FarGrassyMountainsParallax = PIXI.BaseTexture.fromImage("./img/far_grassy_mountains.png");
+    static GrassyMountainsParallax = PIXI.BaseTexture.fromImage("./img/grassy_mountains.png");
+    static GrassyHillParallax = PIXI.BaseTexture.fromImage("./img/grassy_hill.png");
+
+    static WarpedCaveBackGroundParallax = PIXI.BaseTexture.fromImage("./img/warped_cave_background.png");
+    static WarpedCaveMiddleGroundParallax = PIXI.BaseTexture.fromImage("./img/warped_cave_middleground.png");
+
+    static CountryPlatformTileset = PIXI.BaseTexture.fromImage("./img/country-platform-tileset.png");
+
+    static CavernBackgroundParallax = PIXI.BaseTexture.fromImage("./img/cavern_background.png");
+    static CavernWallParallax = PIXI.BaseTexture.fromImage("./img/cavern_wall.png");
+
+    static CavernTileset = PIXI.BaseTexture.fromImage("./img/cavern_tiles.png");
 
     static library = 
     {        
         android_omni:
         {
             sheet:
-            {
-        
+            {        
                 idle: 
+                [
+                    new PIXI.Texture(illustration.AndroidOmniSheetImage, new PIXI.Rectangle(0, 0, 50, 37)),                 
+                    new PIXI.Texture(illustration.AndroidOmniSheetImage, new PIXI.Rectangle(50, 0, 50, 37)),
+                    new PIXI.Texture(illustration.AndroidOmniSheetImage, new PIXI.Rectangle(100, 0, 50, 37)),
+                    new PIXI.Texture(illustration.AndroidOmniSheetImage, new PIXI.Rectangle(150, 0, 50, 37))                  
+                ],
+ 
+                run: 
                 [
                     new PIXI.Texture(illustration.AndroidOmniSheetImage, new PIXI.Rectangle(50, 37, 50, 37)),
                     new PIXI.Texture(illustration.AndroidOmniSheetImage, new PIXI.Rectangle(100, 37, 50, 37)),
@@ -40,7 +61,25 @@ class illustration extends PIXI.Sprite
                     new PIXI.Texture(illustration.AndroidOmniSheetImage, new PIXI.Rectangle(200, 37, 50, 37)),
                     new PIXI.Texture(illustration.AndroidOmniSheetImage, new PIXI.Rectangle(250, 37, 50, 37)),
                     new PIXI.Texture(illustration.AndroidOmniSheetImage, new PIXI.Rectangle(300, 37, 50, 37)),                    
-                ]    
+                ],
+ 
+                rising_slash: 
+                [
+                    new PIXI.Texture(illustration.AndroidOmniSheetImage, new PIXI.Rectangle(150, 185, 50, 37)),
+                    new PIXI.Texture(illustration.AndroidOmniSheetImage, new PIXI.Rectangle(200, 185, 50, 37)),
+                    new PIXI.Texture(illustration.AndroidOmniSheetImage, new PIXI.Rectangle(250, 185, 50, 37)),
+                    new PIXI.Texture(illustration.AndroidOmniSheetImage, new PIXI.Rectangle(300, 185, 50, 37)),
+                    
+                    new PIXI.Texture(illustration.AndroidOmniSheetImage, new PIXI.Rectangle(0, 222, 50, 37)),
+                    new PIXI.Texture(illustration.AndroidOmniSheetImage, new PIXI.Rectangle(50, 222, 50, 37)),
+                    new PIXI.Texture(illustration.AndroidOmniSheetImage, new PIXI.Rectangle(100, 222, 50, 37)),
+                    new PIXI.Texture(illustration.AndroidOmniSheetImage, new PIXI.Rectangle(150, 222, 50, 37)),                    
+                    new PIXI.Texture(illustration.AndroidOmniSheetImage, new PIXI.Rectangle(200, 222, 50, 37)),
+                    new PIXI.Texture(illustration.AndroidOmniSheetImage, new PIXI.Rectangle(250, 222, 50, 37)),                    
+                    new PIXI.Texture(illustration.AndroidOmniSheetImage, new PIXI.Rectangle(300, 222, 50, 37)),                   
+                    
+                    new PIXI.Texture(illustration.AndroidOmniSheetImage, new PIXI.Rectangle(0, 259, 50, 37)),                    
+                ]   
             }
         },
         
@@ -301,15 +340,176 @@ class illustration extends PIXI.Sprite
                 ]    
             }            
         },  
+        
+        parallax_field:
+        {
+            sheet:
+            {
+                idle: 
+                [
+                    new PIXI.Texture(illustration.SkyParallax, new PIXI.Rectangle(0, 0, 384, 216)),
+                    new PIXI.Texture(illustration.FarGrassyMountainsParallax, new PIXI.Rectangle(0, 0, 384, 216)),
+                    new PIXI.Texture(illustration.GrassyMountainsParallax, new PIXI.Rectangle(0, 0, 384, 216)),
+                    new PIXI.Texture(illustration.GrassyHillParallax, new PIXI.Rectangle(0, 0, 384, 216))
+                ]    
+            }            
+        },  
+        
+        parallax_cave:
+        {
+            sheet:
+            {           
+                idle: 
+                [
+                    new PIXI.Texture(illustration.WarpedCaveBackGroundParallax, new PIXI.Rectangle(0, 0, 240, 176)),                
+                    new PIXI.Texture(illustration.WarpedCaveMiddleGroundParallax, new PIXI.Rectangle(0, 0, 272, 176))
+                ]    
+            }            
+        },
+
+        parallax_cavern:
+        {
+            sheet:
+            {
+                
+                idle: 
+                [
+                    new PIXI.Texture(illustration.CavernBackgroundParallax, new PIXI.Rectangle(0, 0, 192, 288)),                
+                    new PIXI.Texture(illustration.CavernWallParallax, new PIXI.Rectangle(0, 0, 512, 288))
+                ]    
+            }            
+        },
+
+        country_platform_tileset:
+        {
+            sheet:
+            {
+               
+                tiles:
+                [              
+                    new PIXI.Texture(illustration.CountryPlatformTileset, new PIXI.Rectangle(32, 106, 33, 54)),                
+                    new PIXI.Texture(illustration.CountryPlatformTileset, new PIXI.Rectangle(65, 106, 32, 54)),                
+                    new PIXI.Texture(illustration.CountryPlatformTileset, new PIXI.Rectangle(97, 106, 15, 54)),
+                    new PIXI.Texture(illustration.CountryPlatformTileset, new PIXI.Rectangle(32, 18, 126, 89)),                   
+ 
+                ],
+                
+                idle: 
+                [
+                    new PIXI.Texture(illustration.WarpedCaveBackGroundParallax, new PIXI.Rectangle(0, 0, 240, 176)),                
+                    new PIXI.Texture(illustration.WarpedCaveMiddleGroundParallax, new PIXI.Rectangle(0, 0, 272, 176))
+                ]    
+            }            
+        },     
+
+        cavern_tileset:
+        {
+            sheet:
+            {
+               
+                tiles:
+                [              
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(112, 64, 16, 16)),                
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(112, 80, 16, 16)),               
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(112, 96, 16, 16)),
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(112, 112, 16, 16)),
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(112, 128, 16, 16)),
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(112, 144, 16, 16)),
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(112, 160, 16, 16)),
+                    
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(128, 64, 16, 16)),                
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(128, 80, 16, 16)),               
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(128, 96, 16, 16)),
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(128, 112, 16, 16)),
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(128, 128, 16, 16)),
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(128, 144, 16, 16)),
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(128, 160, 16, 16)),                    
+
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(144, 64, 16, 16)),                
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(144, 80, 16, 16)),               
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(144, 96, 16, 16)),
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(144, 112, 16, 16)),
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(144, 128, 16, 16)),
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(144, 144, 16, 16)),
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(144, 160, 16, 16)),
+          
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(176, 96, 16, 16)),
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(176, 112, 16, 16)),
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(176, 128, 16, 16)),
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(176, 144, 16, 16)),  
+
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(192, 96, 16, 16)),
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(192, 112, 16, 16)),
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(192, 128, 16, 16)),
+                                      
+
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(208, 96, 16, 16)),
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(208, 112, 16, 16)),
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(208, 128, 16, 16)),
+ 
+
+
+
+
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(256, 96, 16, 16)),
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(256, 112, 16, 16)),
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(256, 128, 16, 16)),
+                                      
+                    
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(272, 96, 16, 16)),
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(272, 112, 16, 16)),
+                    new PIXI.Texture(illustration.CavernTileset, new PIXI.Rectangle(272, 128, 16, 16)),
+                                                                              
+                ],
+                
+                idle: 
+                [
+                    new PIXI.Texture(illustration.WarpedCaveBackGroundParallax, new PIXI.Rectangle(0, 0, 240, 176)),                
+                    new PIXI.Texture(illustration.WarpedCaveMiddleGroundParallax, new PIXI.Rectangle(0, 0, 272, 176))
+                ]    
+            }            
+        },
+        
+    }
+
+    build_image(originX, originY, template)
+    {    
+        for (var i = 0; i < this.background_tiles.length; i++)
+        {
+            this.background.removeChild(this.background_tiles[i]);
+        }
+    
+        for (var i = 0; i < template.length; i++)
+        {
+            this.background_tiles[i] = new PIXI.Sprite(illustration.library[template[i].texture].sheet.tiles[template[i].index]);
+            this.background_tiles[i].x = template[i].x + originX;
+            this.background_tiles[i].y = template[i].y + originY;
+            this.background_tiles[i].anchor.set(0);
+            
+            this.background.addChild(this.background_tiles[i]);
+        }      
     }
 
 
-    set_background(background)
+    set_background(originX, originY, background)
     {
-        this.background = background;
-        this.addChild(this.background);
-        this.background.anchor.set(0.5);
-        this.addChild(this.character);
+        this.build_image(originX, originY, background);
+    //    this.addChild(this.background);
+  //      this.background.anchor.set(0.5);
+    //    this.addChild(this.character);
+    //    this.mask = null;
+    }
+    
+    set_animation(animation)
+    {
+        this.character.stop();
+        this.character.textures = illustration.library[this.texture].sheet[animation.action];
+        this.character.animationSpeed = animation.speed;
+        this.character.loop = true;
+        
+        this.animation_time = animation.time;
+        
+        this.character.play();      
     }
 
     constructor(texture, template) 
@@ -319,7 +519,7 @@ class illustration extends PIXI.Sprite
         var player;
         var cardTexture;
         
-        if (template.background != undefined)
+   /*     if (template.background != undefined)
         {
             this.background = new PIXI.Sprite(illustration.library[template.background].sheet.idle[0]);
         }
@@ -330,27 +530,69 @@ class illustration extends PIXI.Sprite
         
 //        this.background = new PIXI.Sprite(illustration.library.cave_background.sheet.idle[0]);
         this.background.anchor.set(0.5);
-        this.addChild(this.background);
- 
-        player = new PIXI.AnimatedSprite(illustration.library[texture].sheet.idle);
-            
-        player.anchor.set(0.5);
-        player.animationSpeed = .5;
-        player.loop = true;
-        
-        player.play();
-        this.character = player;
+        this.addChild(this.background);*/
 
-        this.y = -cardH/6
-        
-        this.addChild(player);
-		
-		this.anchor.x = .5;
-		this.anchor.y = .5;
+        this.background = new PIXI.Container();
+        this.background_tiles = [];
+        this.addChild(this.background);
+
+        this.texture = texture; 
+        this.animation_time = 50;
+
+         
+
+
+        if (template.tiles)
+        {
+            
+            
+/*          var tiles = [];            
+            
+            for (var i = 0; i < template.tiles.length; i++)
+            {
+                tiles[i] = new PIXI.Sprite(illustration.library[template.tiles[i].texture].sheet.tiles[template.tiles[i].index]);
+                tiles[i].x = template.tiles[i].x;
+                tiles[i].y = template.tiles[i].y;
+                tiles[i].anchor.set(0);
+                
+                this.background.addChild(tiles[i]);                
+            }      */
+
+            parent.opacities = template.tiles;
+        }
+        else
+        {
+            player = new PIXI.AnimatedSprite(illustration.library[texture].sheet.idle);
+                
+            player.anchor.set(0.5);
+            player.animationSpeed = .1;
+            player.loop = true;
+            
+            player.play();
+            this.character = player;
+
+            this.y = -cardH/6
+            
+            this.addChild(player);
+            
+//            this.anchor.x = .5;
+//            this.anchor.y = .5;
+        }
     }	
 	
     enterFrame()
     {
-
+        if (this.character)
+        {
+            this.animation_time--;
+            if (this.animation_time == 0)
+            {
+                this.character.stop();
+                this.character.textures = illustration.library[this.texture].sheet.idle;
+                this.animation_time = 100;
+                this.character.animationSpeed = .1;
+                this.character.play();
+            }
+        }
     }	
 }
