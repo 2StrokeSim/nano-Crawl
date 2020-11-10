@@ -1,34 +1,15 @@
 const   cardW = 100,
         cardH = 140;
 
+var null_function = function(){};
+    
 class Card extends collection
-{
-    
+{    
     static URLs = [
-   //     "./img/card.png",
-   //     "./img/card2.png",
-   //     "./img/card3.png",
-   //     "./img/card4.png",
-   //     "./img/card5.png",
-   //     "./img/adventurer-v1.5-Sheet.png",
-   //     "./img/derp.png",
         "./img/white_card_boundary.png",
-   //     "./img/sword_slash_collection_by_redballbomb-dbz1bas.png"
-    ];
+   ];
     
-    static Actions = 
-    [
-        "action_slash",  
-        "action_thrust", 
-        "action_shoot"       
-    ];
-    
-    static Statuses = 
-    [
-        "status_bleed"   
-    ];
-
-    null_function(){};
+    null_function(){}
 
     set_quantity(quantity)
     {
@@ -60,27 +41,38 @@ class Card extends collection
     
     NPC_actor_update()
     {
-        this.cards[2].cards[0].pick_cards();                
-        this.cards[2].cards[4].status_update();  
-        this.cards[2].cards[4].empty();          
-                
-        this.cards[0].cards[1].status_update();
-        this.cards[2].cards[0].empty();        
-        this.cards[2].cards[0].action();         
+        this.cards[1].cards[1].status_update();
+        
+/*        registry.deck.cards[0].pick_cards(); 
+        registry.deck.cards[0].empty();        
+        
+        registry.deck.cards[4].status_update();  
+        registry.deck.cards[4].empty();   */                               
     }    
+    
+    
     
     client_actor_update()
     {
-        selection.empty(); 
-        var junk = this.cards[2].cards[0];
-        this.cards[2].cards[4].status_update(); 
-        this.cards[2].cards[4].empty();          
-        
-        this.cards[0].cards[1].status_update();
-        this.cards[2].cards[0].empty();        
-        this.cards[2].cards[0].action(); 
+        this.cards[1].cards[1].status_update();
+     //   registry.deck.cards[0].cards[0].empty();                                       
+     //   registry.deck.cards[0].cards[0].action();            
+      
+     //   registry.deck.cards[0].cards[1].action();
+
+             
+        registry.deck.cards[4].status_update(); 
+        registry.deck.cards[4].empty(); 
     }
-        
+         
+    collection_action()
+    {
+        for (var i = 0; i < this.cards.length; i++)
+        {
+            this.cards[i].action();
+        }        
+    }
+    
     status_update()
     {
         this.action();
@@ -89,37 +81,30 @@ class Card extends collection
             this.cards[i].status_update();
         }
     }
-
-    open_pack(card_number, card_count, card_set)
+    
+    set_input(template)
     {
-        for ( var i = 0 ; i<card_count ; i++ )
-        {
-            var cardTexture = card_set[Math.floor(card_number*Math.random())];
-            var cardItem = new Card(this,PIXI,cardTexture,{visual: {visible:true}});
+        this.visual.interactive = true;
+        this.visual.buttonMode = true;
 
-            registry.deck.cards[0].push(cardItem);
-        }
+        this.visual.on(template.input[0].event, this.visual[template.input[0].event + '_handler']);
+        this.visual[template.input[0].event + '_handler_mapping'] = template.input[0].action;        
     }
     
-    set_collection_input()
-    {
+    set_collection_input(template)
+    {        
         for ( var i = 0 ; i<this.cards.length ; i++ )
         {
-            var template = { input: [{ event: 'pointerdown', response: "add_card_to_selection", parameters: [] }] };
-
-            this.cards[i].visual.interactive = true;
-            this.cards[i].visual.buttonMode = true;
-
-            this.cards[i].visual.on(template.input[0].event, this.cards[i].visual[template.input[0].event + '_handler']);
-            this.cards[i].visual[template.input[0].event + '_handler_mapping'] = { response: this.cards[i].visual[template.input[0].response], parameters: template.input[0].parameters };
-        }        
-
-// TODO: Have this show up somewhere, I guess. Though probably not? Being able to change cards in the queue before
-// play should be good enough, I'm hoping...
-//        var cardItem = new Card(this,PIXI,"button_play",{visual: {visible:true}});     
-//        this.push(cardItem);        
-//        cardItem.x = 180;
-//        cardItem.y = -200;        
+            this.cards[i].set_input(template);
+        }            
+    }
+    
+    set_location_input(template)
+    {
+        for (var i = 0; i < this.cards.length; i++)
+        {
+            this.cards[i].set_collection_input(template);
+        }            
     }
     
     target_first_adjacent()
@@ -134,11 +119,6 @@ class Card extends collection
                 break;
             }
         }
-    }
-    
-    deal_cards()
-    {
-        registry.deck.cards[1].action();
     }
     
     pick_cards()
@@ -171,13 +151,18 @@ class Card extends collection
     };
 
 
-    add_malfunction_to_target_component(target, path, template, value, quantity)
+    add_malfunction_to_target_component(target, geometry, template, value, quantity)
     {
+        registry.actor.set_animation({action: "rising_slash", time: 20, speed: 0.5});
+        
+        var sound = PIXI.sound.Sound.from('./snd/sword/MetalSlash5.wav');
+        sound.play();
+        
         var item = new Card(this, PIXI, template, {visual: {visible:true}}, value, quantity);
 
         var reference = undefined;
         
-        var container = target.item_via_path(path);
+        var container = target.cards[1].cards[1];//target.item_via_path(1);
         
         for (var i = 0; i < container.cards.length; i++)
         {
@@ -192,7 +177,7 @@ class Card extends collection
         {
             // CAVEAT: push into the cards list only in the first, render and list in second
             container.include(item);
-            target.cards[1].push(item);
+            target.cards[2].push(item);
         }
         else
         {
@@ -211,28 +196,17 @@ class Card extends collection
         this.cards[0].empty();
     }
 
-    effect_against_target(target, path, template, value, quantity)
+    effect_against_target(target, geometry, template, value, quantity)
     {
         var card = new Card(0, PIXI, "effect_cut", {visual: {visible:true}});
-    
-    /*  var new_params = [];
-        for (var i = 0; i < new_params.length; i++)
-        {
-            new_params[i] = card.action_mapping[0].parameters[i];
-        }
         
-        card.action_mapping[0].parameters = new_params;*/
-        
-        var reference = [...registry.actor.reference];
+        var reference = [this.reference[0]];
         var parameters = [...card.action_mapping[0].parameters];
         parameters[0] = reference[0];
         
         card.action_mapping[0].parameters = parameters;
 //      card.action_mapping[0].parameters[0] = reference[0];
         registry.interaction.cards[0].push(card);
-        
-        var crap = registry.interaction.cards[0].cards;
-     //   registry.interaction.action();
     };
     
     set_target_death_response()
@@ -302,32 +276,17 @@ class Card extends collection
     {
         this.parent.remove(this);
     }
-    
-    sudoku()
+
+    set_context(template)
     {
-        registry.actor.detach();        
-    }
-    
-    switch_player_pack(index)
-    {
-        registry.player.cards[2].cards[1] = registry.player.cards[2].cards[2].cards[index];             
-    }    
-    
-    switch_pack(index)
-    {
-        registry.deck.cards[1] = registry.deck.cards[2].cards[index];             
-    }
-    
-    death()
-    {
-        this.switch_pack(1);     
+        this.gui.activate(template);
     }
     
     modify_value(path, amount, max)
     {
-        if (path < 2)
+        if (path < 3)
         {
-            path = { ascent: 0, descent: [0, path] };
+            path = { ascent: 0, descent: [1, path] };
             
             var item = registry.actor.item_via_path(path);
             
@@ -335,11 +294,11 @@ class Card extends collection
         }
         else
         {
-            path = { ascent: 0, descent: [0, 0] };
+            path = { ascent: 0, descent: [1, 0] };
             
             var item = registry.actor.item_via_path(path);
             
-            item.addValue(amount, max);            
+            item.addValue(amount, max);
         }
     }
     
@@ -348,13 +307,13 @@ class Card extends collection
         this.modify_value(index, this.value * scale)
     }
 
-    modify_value_by_component_value(component_path, index, scale, max)
+    modify_value_by_component_value(component_geometry, index, scale, max)
     {
         var component = this;
         
-        for (var i = 0; i < component_path.length; i++)
+        for (var i = 0; i < component_geometry.length; i++)
         {
-            component = component.cards[component_path[i]];
+            component = component.cards[component_geometry[i]];
         }
         
         this.modify_value(index, component.value * -1)
@@ -378,7 +337,7 @@ class Card extends collection
         for (var i = 0; i < list.length; i++)
         {
             list[i].response.call(this, ...list[i].parameters);
-        }       
+        }
     }
     
     action()
@@ -390,44 +349,93 @@ class Card extends collection
         }   */
     }  
 
-    camera_travel(destination)
+    camera_move(destination)
     {
-        destination = registry.location.cards[1].cards[destination];
-        
-        
-        app.stage.removeChild(camera);        
+        destination = this.reference[0];
+                
+        app.stage.removeChild(camera);
         
         this.parent.visible = false;
         registry.actor.travel(destination);
         this.parent.visible = true;
                 
-        registry.actor.y = (144*1.5+(400-144*1.5)/2);        
+        registry.location = destination;
+        registry.biome = destination.cards[0];
                 
+        registry.location.x = (300);
+        registry.location.y = (120);
+        
         camera = destination;
         camera.x = cardW/2+20;
         camera.y = cardH;
         
         app.stage.addChild(camera);                     
     }
-    
-    actor_travel(destination)
+
+    center()
     {
-        this.parent.visible = false;
-        this.travel(destination);
+        this.x = (300);
+        this.y = (40);    
+
+        var root = this;
+        var x = 0;
+        var y = 0;
+        
+        for (;root != undefined; root = root.parent)
+        {
+            x += root.x;
+            y += root.y;
+        }
+    }
+
+    camera_open_location()
+    {
         this.parent.visible = true;
-    }    
+        this.visible = true;
+              
+        registry.location = this;
+        registry.biome = this.cards[0];
+                
+        this.center();
+        
+        this.set_location_input({ input: [{ event: 'pointerover', 
+                                  action: [
+                                                {response: "set_context", parameters: ["drop_down_hand"]},
+                                                {response: "remove_handler", parameters: ["pointerover_handler_mapping"]}
+                                          ] 
+                                  
+                                  }] })
+          
+        camera = this.parent;
+        camera.x = cardW/2+20;
+        camera.y = cardH;
+        
+        app.stage.addChild(camera); 
+        camera.visual.muralize();
+    }
+    
+    camera_travel(destination)
+    {
+        var sound = PIXI.sound.Sound.from('./snd/door/DoorClose1.wav');
+        
+        sound.play();
+        registry.actor.set_animation({action: "run", time: 100, speed: 0.3});
+        destination = this.reference[1];
+                
+        app.stage.removeChild(camera);
+        
+        this.parent.visible = false;
+        registry.actor.travel(destination);
+
+        destination.camera_open_location();
+    }
     
 	constructor(container,PIXI=null,template=null,parameters=null,value=undefined,quantity=undefined, reference=[],collection=[]) 
-    {
-        
-        if (template == "primary_player_deck")
-        {
-            var meh = "meh";
-        }        
-            
+    {      
         template = Card.library[template];
         super(template);
 
+        this.set_animation = null_function;
         this.template = template;
             
         this.reference = reference;    
@@ -443,6 +451,8 @@ class Card extends collection
         {
             this.visual = new visual(template.visual, parameters.visual);
             this.addChild(this.visual);                        
+            
+            this.set_animation = this.visual.set_animation;
 		}
         
         this.iconized = false;        
@@ -452,13 +462,9 @@ class Card extends collection
 		//this.r0 = this.rotation = (Math.random()-.5)/10;		
 		
 		this.targetX = 0;
-        this.targetY = 0;
+        this.targetY = 0;		
 		
-		this.xPath = [];
-		this.yPath = [];
-		this.rPath = [];		
-		
-		this.pathFrame = 0;
+		this.geometryFrame = 0;
 		
 		this.visuals = 6;	
                 
@@ -474,7 +480,7 @@ class Card extends collection
             this.visual.buttonMode = true;
 
             this.visual.on(template.input[0].event, this.visual[template.input[0].event + '_handler']);
-            this.visual[template.input[0].event + '_handler_mapping'] = { response: this.visual[template.input[0].response], parameters: template.input[0].parameters };
+            this.visual[template.input[0].event + '_handler_mapping'] = template.input[0].action;
         }
         
         if (template.action)
@@ -487,48 +493,51 @@ class Card extends collection
             for (var i = 0; i < template.action.length; i++)
             {
                 var parameters = [...template.action[i].parameters];
-                this.action_mapping[i] = { response: this[template.action[i].response], parameters: template.action[i].parameters };             
+                this.action_mapping[i] = { response: this[template.action[i].response], parameters: parameters };             
             }            
         }
+        
+        if (template.context)
+        {
+            this.context = template.context;
+        }
+        
+        this.gui = new GUI(this, "drop_down_hand");
+        this.addChild(this.gui);
         
         if (template.inventory != undefined)
         {  
             for (var i = 0; i < template.inventory.length; i++)
             {
                 var item = template.inventory[i];
-
-                if (item.meta == "prepared" || item.meta == "executing" || item.meta == "player deck")
-                {
-                    var meh = "meh";
-                }
                     
                 var card = new Card(this, PIXI, item.template, item, item.value, item.quantity, []);
-                if (item.iconize) card.iconize();                   
-                
-                if (item.meta == "prepared" || item.meta == "executing" || item.meta == "player deck")
-                {
-                    var meh = "meh";
-                }
+                if (item.iconize) card.iconize();                                   
 
                 if (item.visual){ this.push(card); }
-                else { this.include(card); card.visible = false;}
-                
-            }
-
-            if ( template == Card.library.android_omni || template == Card.library.android_labor )
+                else { this.include(card); card.visible = false;}                
+            }   
+        }
+        
+        if (parameters.inventory != undefined)
+        {  
+            for (var i = 0; i < parameters.inventory.length; i++)
             {
-                registry.actor = this;
-                registry.deck = registry.actor.cards[2];
-                registry.deck.cards[0].action();
-            }            
-           
+                var item = parameters.inventory[i];
+                    
+                var card = new Card(this, PIXI, item.template, item, item.value, item.quantity, []);
+                if (item.iconize) card.iconize();                                   
+
+                if (item.visual){ this.push(card); }
+                else { this.include(card); card.visible = false;}                
+            }   
         }
         
         if (quantity != undefined) this.set_quantity(quantity);
-        if (value  != undefined) this.set_value(value.initial, value.max);
+        if (value  != undefined) this.set_value(value.initial, value.max);        
         
-        
-        if (this.visual) this.visual.refresh();
+        if (this.visual) 
+        {this.visual.refresh()};
     }	
 	
     addQuantity(quantity)
@@ -569,66 +578,152 @@ class Card extends collection
         this.targetY = this.y = value;
     }
 	
-    move(x, y, source, destination)
-    {
-		
-        this.xPath = [] ;
-        this.yPath = [] ;
-        this.pathFrame = 0 ;
-
-        var cX = this.x ;
-        var cY = this.y ;
-
-        this.targetX = x ;
-        this.targetY = y ;
-
-        var deltaX = this.targetX - cX ;
-        var deltaY = this.targetY - cY ;
-
-        var dx = deltaX/this.visuals ;
-        var dy = deltaY/this.visuals ;
-
-        for(var i = 0 ; i<this.visuals-1 ; i++)
-        {
-            var smoothPrecent = (Math.cos(i/this.visuals*Math.PI)-1)/-2;
-            this.xPath.push(cX+dx*smoothPrecent*this.visuals);
-            this.yPath.push(cY+dy*smoothPrecent*this.visuals);
-            this.rPath.push(this.r0+(Math.sin(Math.PI*2*(i/this.visuals)))/8);
-        }
-
-        this.xPath.push(this.targetX);
-        this.yPath.push(this.targetY);
-        this.rPath.push(this.r0);
-        
-        
-        this.source_pile = source;
-        this.destination_pile = destination;
-    }	
-	
     enterFrame()
-    {
-        if(this.xPath.length>0)
+    {    
+//        this.position.update();
+        
+        for (var i in this.children)
         {
-            this.x = this.xPath[this.pathFrame];
-            this.y = this.yPath[this.pathFrame];
-      //      this.rotation = this.rPath[this.pathFrame];
-            this.pathFrame++;
-
-            if(this.pathFrame>=this.xPath.length)
-            {
-                this.xPath = [];
-                this.yPath = [];
-                this.rPath = [];
-                
-                this.x = 0//cardW/2;
-                
-                this.source_pile.remove(this);
-                this.destination_pile.push(this);
-            }
+            this.children[i].enterFrame();
+        //  registry.interaction.action();
         }
     }	
 }
 
+
+
+
+class GUI extends PIXI.Container
+{
+    static library = 
+    {
+        drop_down_hand:
+        {
+            geometry: 
+            { 
+                generator: Geometry.radialListFromCoords, 
+                elements: 
+                [   
+                    { Theta: 3*(Math.PI)/2, Radius: 0, Rotation: 0 },
+                    { Theta: 3*(Math.PI)/2, Radius: 0, Rotation: 0 },
+                    { Theta: 3*(Math.PI)/2, Radius: 0, Rotation: 0 },
+                    { Theta: 3*(Math.PI)/2, Radius: 0, Rotation: 0 },
+                    { Theta: 3*(Math.PI)/2, Radius: 0, Rotation: 0 },
+                    { Theta: 3*(Math.PI)/2, Radius: 0, Rotation: 0 },
+                    { Theta: 3*(Math.PI)/2, Radius: 0, Rotation: 0 }
+                    
+                ]
+            }
+        },
+        
+        location_inventory:
+        {
+            geometry: 
+            { 
+                generator: Geometry.radialListFromCoords, 
+                elements: 
+                [   
+                    { Theta: 3*(Math.PI)/2, Radius: 0, Rotation: 0 },
+                    { Theta: 3*(Math.PI)/2, Radius: 0, Rotation: 0 },
+                    { Theta: 3*(Math.PI)/2, Radius: 0, Rotation: 0 },
+                    { Theta: 3*(Math.PI)/2, Radius: 0, Rotation: 0 },
+                    { Theta: 3*(Math.PI)/2, Radius: 0, Rotation: 0 },
+                    { Theta: 3*(Math.PI)/2, Radius: 0, Rotation: 0 },
+                    { Theta: 3*(Math.PI)/2, Radius: 0, Rotation: 0 }
+                    
+                ]
+            }
+        }        
+    }
+    
+    constructor(object, template)
+    {
+        super();
+        this.object = object;
+        this.get_overvisual = object.get_overvisual.bind(object);                                       
+    }
+
+    detach()
+    {
+    }
+
+    empty()
+    {
+        this.geometry.reset();        
+        for (;this.children.length > 0;)
+        {
+            this.removeChild(this.children[0]);
+        }        
+    }
+
+    set_input()
+    {
+        for ( var i = 0 ; i<this.cards.length ; i++ )
+        {
+            this.cards[i].set_input(template);
+        }
+    }
+
+    push(card)
+    {
+        this.addChild(card);        
+        this.geometry.attach(card);
+    }
+
+    activate(template)
+    {
+        template = GUI.library[template];
+        this.geometry = template.geometry.generator(template.geometry);
+        
+        this.empty();        
+    //    var pack = new Card(0, PIXI, this.object.context[0], {}, undefined, undefined, [this.object.cards[0], this.object.reference[0]]);
+        
+        registry.open_hands.pop();
+        registry.open_hands.push(this);
+        this.delta = { velocity: 5, limit: 200 };
+
+        for (var i = 0; i < this.object.context.length; i++)
+        {
+            this.empty();
+            
+            for (var i = 0; i < this.object.context.length; i++)
+            {
+                var card = new Card(0, PIXI, this.object.context[i], {visual: {visible:true}}, undefined, undefined, [this.object, this.object.reference[0]]);
+                card.set_input({ input: [{ event: 'pointerdown', action: [{response: "add_card_to_selection", parameters: []}] }] });         
+                this.push(card);
+            }
+        }
+
+        this.geometry.dropandFanHand();
+        
+        this.update();
+    }
+    
+    action()
+    {
+    }
+    
+    update()
+    {
+
+    }
+    
+    enterFrame()
+    {
+        if (this.visual)
+        { this.visual.enterFrame(); }
+        
+        for (var i = 0; i < this.children.length; i++)
+        {
+            this.geometry.enterFrame();
+        }        
+        
+        for (var i = 0; i < this.children.length; i++)
+        {
+            this.children[i].enterFrame();
+        }
+    }
+}
 /*  ░░░░░░░░░░▄▄█▀▀▄░░░░ 
     ░░░░░░░░▄█████▄▄█▄░░░░ 
     ░░░░░▄▄▄▀██████▄▄██░░░░ 
